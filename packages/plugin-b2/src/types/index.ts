@@ -1,4 +1,3 @@
-import type { Token } from "@lifi/types";
 import type {
     Address,
     Hash,

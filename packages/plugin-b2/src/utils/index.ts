@@ -1,10 +1,9 @@
-import { IAgentRuntime, elizaLogger } from "@elizaos/core";
+import { elizaLogger } from "@elizaos/core";
 import {
     Hash,
     Address,
     parseUnits,
     encodeFunctionData,
-    SendTransactionParameters,
 } from "viem";
 import { b2Network } from "./chains";
 import { WalletProvider } from "../providers";
@@ -25,12 +24,13 @@ export const sendNativeAsset = async (
 ) => {
     const decimals = await walletProvider.getDecimals(TOKEN_ADDRESSES["B2-BTC"]);
     const walletClient = walletProvider.getWalletClient();
-
-    const args = {
+    const tx = await walletClient.sendTransaction({
+        chain: b2Network,
+        account: walletProvider.getAccount(),
         to: recipient,
         value: parseUnits(amount.toString(), decimals),
-    };
-    const tx = await walletClient.sendTransaction(args);
+        kzg: undefined,
+    });
     return tx as Hash;
 };
 
@@ -154,8 +154,6 @@ export const depositBTC = async (
 ) => {
     try {
         const decimals = b2Network.nativeCurrency.decimals;
-        // const publicClient = walletProvider.getPublicClient();
-
         const walletClient = walletProvider.getWalletClient();
         const data = encodeFunctionData({
             abi: [
@@ -175,13 +173,14 @@ export const depositBTC = async (
             args: [],
         });
 
-        const args = {
-            account: walletProvider.getAddress(),
+        const txHash = await walletClient.sendTransaction({
+            chain: b2Network,
+            account: walletProvider.getAccount(),
             to: farmAddress,
             data,
             value: parseUnits(amount.toString(), decimals),
-        };
-        const txHash = await walletClient.sendTransaction(args);
+            kzg: undefined,
+        });
 
         elizaLogger.debug("Transaction hash:", txHash);
         return txHash;
@@ -201,7 +200,7 @@ export const unstake = async (
         const BTC_PID = 0;
         const decimals = b2Network.nativeCurrency.decimals;
         const publicClient = walletProvider.getPublicClient();
-        const { _result, request } = await publicClient.simulateContract({
+        const { request } = await publicClient.simulateContract({
             account: walletProvider.getAccount(),
             address: farmAddress,
             abi: [
@@ -229,8 +228,8 @@ export const unstake = async (
             functionName: "unstake",
             args: [BigInt(BTC_PID), parseUnits(amount.toString(), decimals)],
         });
-        elizaLogger.debug("Request:", request);
 
+        elizaLogger.debug("Request:", request);
         const walletClient = walletProvider.getWalletClient();
         const tx = await walletClient.writeContract(request);
         elizaLogger.debug("Transaction:", tx);
@@ -249,7 +248,7 @@ export const withdraw = async (
     try {
         const BTC_PID = 0;
         const publicClient = walletProvider.getPublicClient();
-        const { _result, request } = await publicClient.simulateContract({
+        const { request } = await publicClient.simulateContract({
             account: walletProvider.getAccount(),
             address: farmAddress,
             abi: [
@@ -272,8 +271,8 @@ export const withdraw = async (
             functionName: "withdraw",
             args: [BigInt(BTC_PID)],
         });
-        elizaLogger.debug("Request:", request);
 
+        elizaLogger.debug("Request:", request);
         const walletClient = walletProvider.getWalletClient();
         const tx = await walletClient.writeContract(request);
         elizaLogger.debug("Transaction:", tx);

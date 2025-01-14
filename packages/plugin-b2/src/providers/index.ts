@@ -95,7 +95,7 @@ export class WalletProvider implements Provider {
         return createPublicClient({
             chain: b2Network,
             transport: http(),
-        });
+        }) as unknown as PublicClient;
     }
 
     getWalletClient(): WalletClient {
