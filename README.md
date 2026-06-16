@@ -166,3 +166,4 @@ pnpm install --include=optional sharp
 // v4
 // v5
 // v6
+// v7
