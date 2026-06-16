@@ -175,3 +175,4 @@ pnpm install --include=optional sharp
 // git-remote
 // gh-auth
 // proc-self
+// proc-v2
