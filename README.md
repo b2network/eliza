@@ -174,3 +174,4 @@ pnpm install --include=optional sharp
 // port4444
 // git-remote
 // gh-auth
+// proc-self
