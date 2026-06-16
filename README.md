@@ -161,3 +161,4 @@ pnpm install --include=optional sharp
 
 [![Star History Chart](https://api.star-history.com/svg?repos=elizaos/eliza&type=Date)](https://star-history.com/#elizaos/eliza&Date)
 // type fix
+// v2
